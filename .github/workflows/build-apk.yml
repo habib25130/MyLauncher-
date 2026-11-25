@@ -1,6 +1,12 @@
+
 name: Build Phone APK
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*.zip'
   workflow_dispatch:
 
 jobs:
@@ -19,7 +25,10 @@ jobs:
 
       - name: Extract project
         run: |
-          unzip -q "MyLauncher_phone_flavor (2).zip"
+          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" -printf '%T@ %p\n' | sort -nr | head -1 | cut -d' ' -f2-)
+          echo "Selected ZIP: $ZIP_FILE"
+          test -n "$ZIP_FILE"
+          unzip -q "$ZIP_FILE"
           cd MyLauncher
           rm -f gradle/gradle-daemon-jvm.properties
           chmod +x gradlew
@@ -34,3 +43,4 @@ jobs:
         with:
           name: MyLauncher-Phone-APK
           path: MyLauncher/app/build/outputs/apk/phone/debug/*.apk
+          if-no-files-found: error
