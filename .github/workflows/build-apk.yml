@@ -1,0 +1,36 @@
+name: Build Phone APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Extract project
+        run: |
+          unzip -q MyLauncher_phone_cloudbuild.zip
+          cd MyLauncher
+          rm -f gradle/gradle-daemon-jvm.properties
+          chmod +x gradlew
+
+      - name: Build APK
+        run: |
+          cd MyLauncher
+          ./gradlew assemblePhoneDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyLauncher-Phone-APK
+          path: MyLauncher/app/build/outputs/apk/phone/debug/*.apk
