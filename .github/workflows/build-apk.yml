@@ -25,10 +25,10 @@ jobs:
 
       - name: Extract project
         run: |
-          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" -printf '%T@ %p\n' | sort -nr | head -1 | cut -d' ' -f2-)
+          ZIP_FILE=$(ls -t *.zip | head -n 1)
           echo "Selected ZIP: $ZIP_FILE"
-          test -n "$ZIP_FILE"
           unzip -q "$ZIP_FILE"
+          test -d MyLauncher
           cd MyLauncher
           rm -f gradle/gradle-daemon-jvm.properties
           chmod +x gradlew
